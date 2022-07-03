@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section>
+  <div class="container faq">
+    <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+        <h2>일일 팀 업무 확인</h2>
+        <p>"<strong style="color: blue">오늘 팀원</strong>들이 수행한 <strong style="color: blue">업무 사항</strong>을 확인 해봅니다."</p>
+    </div>
+    {% if mylist %}
+    {% for i in mylist %}
+    <div class="row faq-item d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="40">
+      <div class="col-lg-3">
+        <div>
+          <span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: #5cb85c;"></span>&nbsp;&nbsp;<b style="font-size: 2rem;">{{ i.employee.realname }} : </b>
+        </div>
+        <div>{{ i.updated_at }}</div>
+      </div>
+      <div class="col-lg-9">
+        <textarea class="form-control" id="contents" name="contents" rows="10" readonly>{{i.contents}}</textarea>
+        <p></p>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="section-title" data-aos="fade-up" style="margin-top: 10%;">
+      <h3>"팀원들의 <b>오늘 작성 내용</b>이 없습니다."</h3>
+  </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

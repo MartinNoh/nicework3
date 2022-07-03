@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>nicework - HR 관리 플랫폼</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon-16x16.png' %}" rel="icon">
+  <link href="{% static 'assets/img/favicon-32x32.png' %}" rel="apple-touch-icon">
+</head>
+
+<body>
+<input type="hidden" value="{{ source_html }}" id="source-html">
+
+
+<script>
+    window.onload = function() {
+        htmlToFile();
+        alert("다운로드한 서식을 출력하여, 내용 확인 및 서명 후 담당자에게 확인 바랍니다.")
+        window.location.href = "{% url 'leave:hist' %}"
+    };
+
+	function htmlToFile() {
+		var sourceHTML = document.getElementById("source-html").value;
+		var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+		var fileDownload = document.createElement("a");
+		document.body.appendChild(fileDownload);
+		fileDownload.href = source;
+		fileDownload.download = '(주)광주인공지능센터_휴가신청서.' + 'hwp';
+		fileDownload.click();
+		document.body.removeChild(fileDownload);
+	}
+</script>
+
+</body>
+</html>

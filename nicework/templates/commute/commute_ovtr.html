@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section>
+    <div class="container">
+  
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>연장근로 신청</h2>
+            <p>"연장근로한 <strong style="color: blue">일자, 시작 및 종료 시간, 사유</strong>를 입력해주세요."</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-2"></div>
+
+            <div class="col-lg-8">
+                <form method="post" action="{% url 'commute:ovtr' %}">
+                    {% csrf_token %}
+                    {% include "form_errors.html" %}
+                    
+                    <!-- message 표시 -->
+                    {% if messages %}
+                    <div class="alert alert-danger my-3" role="alert">
+                    {% for message in messages %}
+                        <strong>{{ message.tags }}</strong>
+                        <ul><li>{{ message.message }}</li></ul>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 50%;">
+                                    <label for="startdatetime">시작 일시</label>
+                                    <input type="datetime-local" class="form-control" name="startdatetime" id="startdatetime" style="width: 98%;" value="{{ form.startdatetime.value|default_if_none:'' }}" autofocus>
+                                </td>
+                                <td style="width: 50%;">
+                                    <label for="enddatetime">종료 일시</label>
+                                    <input type="datetime-local" class="form-control" name="enddatetime" id="enddatetime" value="{{ form.enddatetime.value|default_if_none:'' }}">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notice">사유</label>
+                        <textarea class="form-control" id="notice" name="notice" rows="4">{{ form.notice.value|default_if_none:'' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%; margin-top: 2%;">
+                            <tr>
+                                <td style="width: 50%; vertical-align: middle;"><b>연장근로 간 식사여부</b></td>
+                                <td style="width: 25%; vertical-align: middle;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_dayofflunch" name="check_meal[]" value="lunch">
+                                        <p>점심 식사 O</p>
+                                    </div>
+                                </td>
+                                <td style="width: 25%;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_ovtimedinner" name="check_meal[]" value="dinner">
+                                        <p>저녁 식사 O</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mb-3" style="text-align: center; margin-top: 3%;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">신청</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-2"></div>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 3rem;">
+            <div class="col-lg-12">
+              <img src="{% static 'assets/img/commute-img.png' %}" style="width: 100%;"></img>
+            </div>
+          </div>
+    </div>
+
+  </section>
+{% endblock %}
+
+
+{% block script %}
+<script>
+
+$("#startdatetime").on("propertychange change keyup paste", function(){
+    if($("#startdatetime").val() != $("#enddatetime").val()){
+        // alert("다른 날짜입니다.");
+
+        // if startdate > enddatetime : 알림하고 입력 값 초기화할 것
+        var startdatetime = new Date($("#startdatetime").val());
+        var enddatetime = new Date($("#enddatetime").val());
+        if (startdatetime > enddatetime){
+            alert("종료 일자가 시작 일자보다 앞설 수 없습니다.");
+            $("#enddatetime").val('');
+        }
+        if (startdatetime.setHours(startdatetime.getHours()+12)< enddatetime){
+        alert("1주 연장근로시간은 12시간을 초과할 수 없습니다.");
+            $("#enddatetime").val('');
+        }
+    }
+});
+$("#enddatetime").on("propertychange change keyup paste", function(){
+    if($("#startdatetime").val() != $("#enddatetime").val()){
+        // alert("다른 날짜입니다.");
+        
+        // if startdatetime > enddatetime : 알림하고 입력 값 초기화할 것
+        var startdatetime = new Date($("#startdatetime").val());
+        var enddatetime = new Date($("#enddatetime").val());
+        if (startdatetime > enddatetime){
+            alert("종료 일자가 시작 일자보다 앞설 수 없습니다.");
+            $("#enddatetime").val('');
+        }
+        if (startdatetime.setHours(startdatetime.getHours()+12)< enddatetime){
+        alert("1주 연장근로시간은 12시간을 초과할 수 없습니다.");
+            $("#enddatetime").val('');
+        }
+    }
+});
+</script>
+{% endblock %}

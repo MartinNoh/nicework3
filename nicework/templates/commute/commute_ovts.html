@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load commute_filter %}
+{% load static %}
+
+{% block content %}
+<!-- ======= About Us Section ======= -->
+<section>
+    <div class="container">
+
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>금주 연장근로현황 확인</h2>
+            <p><strong style="color: blue;">{{ today_week }}주차</strong>, 팀원들의 <strong style="color: blue;">연장근로 현황</strong>을 확인합니다.</p>
+        </div>
+        
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1rem;">
+            <table class="table" style="text-align: center;" id="exceltable">
+                <thead>
+                <tr class="table-dark">
+                    <td>번호</td>
+                    <td>계정</td>
+                    <td>이름</td>
+                    <td>연장근로한 시간</td>
+                    <td>남은 연장근로 시간</td>
+                    <td>12시간 초과 주의</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% if so_list %}
+                {% for so in so_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ so.email|default_if_none:'-' }}</td>
+                    <td>{{ so.realname|default_if_none:'-' }}</td>
+                    <td>{{ so.sum_overtime|default_if_none:'-' }}</td>
+                    <td>{{ so.remain_overtime|default_if_none:'-' }}</td>
+                    {% if so.sum_overtime > 12 %}
+                    <td style="color: red;"><span class="glyphicon glyphicon-alert" aria-hidden="true"></span></td>
+                    {% elif so.sum_overtime > 6 %}
+                    <td style="color: orange;"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></td>
+                    {% else %}
+                    <td style="color: green;"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="8">내용이 없습니다.</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section><!-- End About Us Section -->
+
+{% endblock %}

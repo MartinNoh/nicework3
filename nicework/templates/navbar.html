@@ -1,0 +1,92 @@
+{% load static %}
+<!-- ======= Header ======= -->
+<header id="header">
+  <div class="container">
+
+    <div class="logo">
+      <!-- <h1><a href="/">HOME</a></h1> -->
+      <!-- Uncomment below if you prefer to use an image logo -->
+      {% if myuser %}
+      <a href="/" style="color: darkblue;"><img src="{% static 'assets/img/logo.png' %}" alt="logo" class="img-fluid" style="width: auto; height: 100%;"/>&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ myuser.email }}</b></a>      
+      {% else %}
+      <a href="/" style="color: darkblue;"><img src="{% static 'assets/img/logo.png' %}" alt="logo" class="img-fluid" style="width: auto; height: 100%;"/></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'common:login' %}" style="color: darkblue;">Please <b>Login</b></a>
+      {% endif %}
+    </div>
+
+    <nav id="navbar" class="navbar justify-content-end">
+      <ul>
+        {% if not user.is_manager %}
+        <li class="dropdown"><a href="{% url 'bsnlog:regt' %}"><span>일일 업무</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'bsnlog:regt' %}">일일 업무 기록</a></li>
+            <li><a href="{% url 'bsnlog:situ' %}">일일 팀 업무 확인</a></li>
+            <li><a href="{% url 'bsnlog:hist' %}">나의 업무내역 관리</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="dropdown"><a href="{% url 'bsnlog:regt' %}"><span>일일 업무</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'bsnlog:regt' %}">일일 업무 기록</a></li>
+            <li><a href="{% url 'bsnlog:situ' %}">일일 팀 업무 확인</a></li>
+            <li><a href="{% url 'bsnlog:toth' %}">전체 업무내역 관리</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if not user.is_manager %}
+        <!-- <li class="dropdown"><a href="{% url 'commute:regt' 'check' %}"><span>출퇴근</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'commute:regt' 'check' %}">출퇴근 시간 등록</a></li>
+            <li><a href="{% url 'commute:hist' %}">출퇴근 내역 확인</a></li>
+          </ul>
+        </li> -->
+        <li class="dropdown"><a href="{% url 'commute:ovtr' %}"><span>연장근로</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'commute:ovtr' %}">연장근로 신청</a></li>
+            <li><a href="{% url 'commute:ovth' %}">연장근로 내역 확인</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <!-- <li class="dropdown"><a href="{% url 'commute:situ' %}"><span>출퇴근</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'commute:situ' %}">팀원 출근현황 확인</a></li>
+            <li><a href="{% url 'commute:toth' %}">전체 출퇴근 내역 확인</a></li>
+          </ul>
+        </li> -->
+        <li class="dropdown"><a href="{% url 'commute:ovts' %}"><span>연장근로</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'commute:ovts' %}">금주 연장근로현황 확인</a></li>
+            <li><a href="{% url 'commute:ovtw' %}">연장근로 결재대기 관리</a></li>
+            <li><a href="{% url 'commute:ovtt' %}">전체 연장근로내역 확인</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if not user.is_manager %}
+        <li class="dropdown"><a href="{% url 'leave:regt' %}"><span>휴가 관리</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'leave:cldr' %}">휴가 캘린더 확인</a></li>
+            <li><a href="{% url 'leave:regt' %}">휴가 신청</a></li>
+            <li><a href="{% url 'leave:hist' %}">휴가내역 확인</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="dropdown"><a href="{% url 'leave:wait' %}"><span>휴가 관리</span> <i class="bi bi-chevron-down"></i></a>
+          <ul>
+            <li><a href="{% url 'leave:cldr' %}">휴가 캘린더 확인</a></li>
+            <li><a href="{% url 'leave:situ' %}">잔여 휴가현황 확인</a></li>
+            <li><a href="{% url 'leave:wait' %}">휴가 결재대기 관리</a></li>
+            <li><a href="{% url 'leave:toth' %}">전체 휴가내역 확인</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        <li><a class="nav-link scrollto" href="{% url 'common:mypage' %}">마이페이지</a></li>
+        {% if not user.is_authenticated %}
+        <li><a class="getstarted scrollto" href="{% url 'common:login' %}">로그인</a></li>
+        {% else %}
+        <li><a class="getstarted scrollto" href="{% url 'common:logout' %}">로그아웃</a></li>
+        {% endif %}
+      </ul>
+      <i class="bi bi-list mobile-nav-toggle"></i>
+    </nav><!-- .navbar -->
+
+  </div>
+</header><!-- End Header -->

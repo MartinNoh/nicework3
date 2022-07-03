@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section>
+    <div class="container">
+  
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>휴가 신청</h2>
+            <p>휴가신청 <strong style="color: blue;">양식 작성</strong> 후, 휴가내역 확인 메뉴에서 작성 내용의 <strong style="color: blue;">한글 파일</strong>을 다운로드 받아 <strong style="color: blue;">담당자에게 제출</strong>해주세요.</p>
+            {% if is_sbstt %}
+            <p><strong style="color: blue;">잔여 휴가 {{ remained }}일</strong> = 누적 휴가 {{ total_leave }}일(= 총 연장근로 {{ sum_overtime }}시간 + 총 연차 {{ sum_annual }}일 + 총 포상 {{ sum_reward }}일) - 사용 휴가 {{ sum_used_leave }}일</p>
+            {% else %}
+            <p><strong style="color: blue;">잔여 휴가 {{ remained }}일</strong> = 누적 휴가 {{ total_leave }}일(= 총 연차 {{ sum_annual }}일 + 총 포상 {{ sum_reward }}일) - 사용 휴가 {{ sum_used_leave }}일</p>
+            {% endif %}
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-2"></div>
+
+            <div class="col-lg-8">
+                {% if remained > 0 %}
+                <form method="post" action="{% url 'leave:regt' %}">
+                    {% csrf_token %}
+                    {% include "form_errors.html" %}
+                    
+                    <!-- message 표시 -->
+                    {% if messages %}
+                    <div class="alert alert-danger my-3" role="alert">
+                    {% for message in messages %}
+                        <strong>{{ message.tags }}</strong>
+                        <ul><li>{{ message.message }}</li></ul>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <!-- 이메일을 아이디로 사용하도록 변경하였어도 username으로 사용해야 오류 발생 안함.-->
+                        <label for="reason">휴가 사유</label>
+                        <input type="text" class="form-control" name="reason" id="reason" placeholder="사유 입력"
+                            value="{{ form.reason.value|default_if_none:'' }}" autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 50%;">
+                                    <label for="startdate">휴가 시작일</label>
+                                    <input type="date" class="form-control" name="startdate" id="startdate" style="width: 98%;"
+                                        value="{{ form.startdate.value|default_if_none:'' }}">
+                                </td>
+                                <td style="width: 50%;">
+                                    <label for="enddate">휴가 종료일</label>
+                                    <input type="date" class="form-control" name="enddate" id="enddate"
+                                        value="{{ form.enddate.value|default_if_none:'' }}">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mb-3">
+                        <label for="leavecat">휴가 구분</label>
+                        {% if t_diff >= 8 %}
+                        <select class="form-select" aria-label="휴가 구분 선택" style="height: 3.4rem;" name="leavecat" id="leavecat">
+                            <option value="AL" selected>연차</option>
+                            <option value="MO" hidden>오전 반차</option>
+                            <option value="AO" hidden>오후 반차</option>
+                            <option value="CV">경조 휴가</option>
+                            <option value="OL">공가</option>
+                            <option value="EL" hidden>조퇴</option>
+                            <option value="AB">결근</option>
+                            <option value="SL">병가</option>
+                        </select>
+                        {% else %}
+                        <select class="form-select" aria-label="휴가 구분 선택" style="height: 3.4rem;" name="leavecat" id="leavecat">
+                            <option value="AL" selected>연차</option>
+                            <option value="CV">경조 휴가</option>
+                            <option value="OL">공가</option>
+                            <option value="EL">조퇴</option>
+                            <option value="AB">결근</option>
+                            <option value="SL">병가</option>
+                        </select>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 50%;">
+                                    <label for="starttime">휴가 시작시간</label>
+                                    <input type="time" class="form-control" name="starttime" id="starttime" style="width: 98%;" value="{{ opening_time }}" readonly>
+                                </td>
+                                <td style="width: 50%;">
+                                    <label for="endtime">휴가 종료시간</label>
+                                    <input type="time" class="form-control" name="endtime" id="endtime" value="{{ closing_time }}" readonly>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <input type="hidden" id="opening_time" name="opening_time" value="{{ opening_time }}"/>
+                    <input type="hidden" id="closing_time" name="closing_time" value="{{ closing_time }}"/>
+                    <input type="hidden" id="mo_endtime" name="mo_endtime" value="{{ mo_endtime }}"/>
+                    <input type="hidden" id="ao_starttime" name="ao_starttime" value="{{ ao_starttime }}"/>
+                    <input type="hidden" id="remained" name="remained" value="{{ remained }}"/>
+
+                    <div class="mb-3">
+                        <label for="emgnum">비상 연락처</label>
+                        <input type="text" class="form-control" name="emgnum" id="emgnum" placeholder="010-0000-0000"
+                            value="{{ form.emgnum.value|default_if_none:'' }}">
+                    </div>
+                    <div class="mb-3" style="text-align: center; margin-top: 4%;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">신청 및 출력</button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="section-title" data-aos="fade-up" style="text-align: center; margin-top: 20%;">
+                    <h3>잔여 휴가일수가 <b>없습니다.</b></h3>
+                </div>
+            {% endif %}
+            </div>
+
+            <div class="col-lg-2"></div>
+        </div>
+    </div>
+
+  </section>
+{% endblock %}
+
+{% block script %}
+<script>
+      
+$("#startdate").on("propertychange change keyup paste", function(){
+    if($("#startdate").val() != $("#enddate").val()){
+        // alert("다른 날짜입니다.");
+
+        // if startdate > enddate : 알림하고 입력 값 초기화할 것
+        var startDate = new Date($("#startdate").val());
+        var endDate = new Date($("#enddate").val());
+        if (startDate > endDate){
+            alert("종료 일자가 시작 일자보다 앞설 수 없습니다.");
+            $("#enddate").val('');
+        }
+
+        var difference= endDate-startDate;
+        days = difference/(1000 * 3600 * 24)
+        if (days + 1 > $("#remained").val()){
+            alert("잔여 연차 일수를 초과하였습니다.");
+            $("#enddate").val('');
+        }
+
+        // if startdate != enddate : leavecat을 연차만 선택 가능하게 할 것
+        document.querySelectorAll("#leavecat option").forEach(opt => {
+            if (opt.value == "MO" || opt.value == "AO" || opt.value == "EL") {
+                opt.hidden = true;
+            }else{
+                opt.hidden = false;
+                if(opt.value == "AL"){
+                    opt.selected = true;
+                }
+            }
+        });
+    }else{
+        document.querySelectorAll("#leavecat option").forEach(opt => {
+            opt.hidden = false;
+        });
+    }
+});
+$("#enddate").on("propertychange change keyup paste", function(){
+    if($("#startdate").val() != $("#enddate").val()){
+        // alert("다른 날짜입니다.");
+        
+        // if startdate > enddate : 알림하고 입력 값 초기화할 것
+        var startDate = new Date($("#startdate").val());
+        var endDate = new Date($("#enddate").val());
+        if (startDate > endDate){
+            alert("종료 일자가 시작 일자보다 앞설 수 없습니다.");
+            $("#enddate").val('');
+        }
+
+        var difference= endDate-startDate;
+        days = difference/(1000 * 3600 * 24)
+        if (days + 1 > $("#remained").val()){
+            alert("잔여 연차 일수를 초과하였습니다.");
+            $("#enddate").val('');
+        }
+
+        // if startdate != enddate : leavecat을 연차만 선택 가능하게 할 것
+        document.querySelectorAll("#leavecat option").forEach(opt => {
+            if (opt.value == "MO" || opt.value == "AO" || opt.value == "EL") {
+                opt.hidden = true;
+            }else{
+                opt.hidden = false;
+                if(opt.value == "AL"){
+                    opt.selected = true;
+                }
+            }
+        });
+    }else{
+        document.querySelectorAll("#leavecat option").forEach(opt => {
+            opt.hidden = false;
+        });
+    }
+});
+
+
+$("#leavecat").on("propertychange change keyup paste", function(){
+    if ($("#leavecat option:selected").val() == "EL"){ // 조퇴
+        $("#starttime").attr("readonly",false);
+        var today = new Date();   
+        var hours = ('0' + today.getHours()).slice(-2); 
+        var minutes = ('0' + today.getMinutes()).slice(-2);
+        var seconds = ('0' + today.getSeconds()).slice(-2); 
+        var timeString = hours + ':' + minutes;
+        console.log(timeString);
+        $("#starttime").val(timeString);
+        $("#endtime").val($("#closing_time").val())
+    }else if ($("#leavecat option:selected").val() == "MO"){ // 오전 반차
+        $("#starttime").attr('readonly', true);
+        $("#starttime").val($("#opening_time").val())
+        $("#endtime").val($("#mo_endtime").val())
+    }else if ($("#leavecat option:selected").val() == "AO"){ // 오후 반차
+        $("#starttime").attr('readonly', true);
+        $("#starttime").val($("#ao_starttime").val())
+        $("#endtime").val($("#closing_time").val())
+    }else{
+        $("#starttime").attr('readonly', true);
+        $("#starttime").val($("#opening_time").val())
+        $("#endtime").val($("#closing_time").val())
+    }
+});
+</script>
+{% endblock %}

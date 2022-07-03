@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8" style="padding-top: 5rem; padding-bottom: 20vh;">
+                <div class="mb-3" style="text-align: center;">
+                    <h3><b>Sign Up</b></h3>
+                </div>
+                <form method="post" action="{% url 'common:signup' %}">
+                    {% csrf_token %}
+                    {% include "form_errors.html" %}
+                    <div class="mb-3">
+                        <label for="email">이메일</label>
+                        <input type="text" class="form-control" name="email" id="email" placeholder="email@example.com"
+                            value="{{ form.email.value|default_if_none:'' }}" autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 48%;">
+                                    <label for="password1">비밀번호 입력</label>
+                                    <input type="password" class="form-control" name="password1" id="password1" placeholder="••••••••••"
+                                        value="{{ form.password1.value|default_if_none:'' }}">
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 51%;">
+                                    <label for="password1">비밀번호 재입력</label>
+                                    <input type="password" class="form-control" name="password2" id="password2" placeholder="••••••••••"
+                                        value="{{ form.password2.value|default_if_none:'' }}">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 48%;">
+                                    <label for="realname">이름</label>
+                                    <input type="text" class="form-control" name="realname" id="realname" placeholder="홍길동"
+                                        value="{{ form.realname.value|default_if_none:'' }}">
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 51%;">
+                                    <label for="phonenum">휴대폰 번호</label>
+                                    <input type="text" class="form-control" name="phonenum" id="phonenum" placeholder="010-0000-0000"
+                                        value="{{ form.phonenum.value|default_if_none:'' }}">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 48%;">
+                                    <label for="rank">직급</label>
+                                    <select class="form-select" aria-label="직급 선택" style="height: 3.4rem;" name="rank" id="rank">
+                                        <option value="AS" selected>주임</option>
+                                        <option value="SN">대리</option>
+                                        <option value="PC">책임</option>
+                                        <option value="CF">수석</option>
+                                    </select>
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 51%;">
+                                    <label for="department">부서</label>
+                                    <select class="form-select" aria-label="부서 선택" style="height: 3.4rem;" name="department" id="department">
+                                        <option value="KNG" selected>지식큐레이션팀</option>
+                                        <option value="DEV" >개발팀</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="mb-3">
+                        <label for="effcdate">입사 일자</label>
+                        <input type="date" class="form-control" name="effcdate" id="effcdate"
+                            value="{{ form.effcdate.value|default_if_none:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 48%;">
+                                    <label for="openingtime">평소 근무 시작시간</label>
+                                    <input type="time" class="form-control" name="openingtime" id="openingtime"
+                                        value="{{ form.openingtime.value|default_if_none:'' }}">
+                                </td>
+                                <td style="width: 1%;"></td>
+                                <td style="width: 51%;">
+                                    <label for="closingtime">평소 근무 종료시간</label>
+                                    <input type="time" class="form-control" name="closingtime" id="closingtime"
+                                        value="{{ form.closingtime.value|default_if_none:'' }}">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="mb-3" style="margin-top: 4%;">
+                        <button type="submit" class="btn btn-success" style="width: 100%;">계정 생성</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}

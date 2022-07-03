@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: https_nginx
+    image: nginx:alpine
+    restart: always
+    ports:
+      - 20080:80
+      - 20443:443
+    volumes:
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
+  certbot:
+    container_name: https_certbot
+    image: certbot/certbot:latest
+    restart: always
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+

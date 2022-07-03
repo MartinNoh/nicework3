@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load commute_filter %}
+{% load static %}
+
+{% block content %}
+<!-- ======= About Us Section ======= -->
+<section>
+    <div class="container">
+
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>팀원 출근현황 확인</h2>
+            <p>현재, 팀원들의 <strong style="color: blue;">출근 상황</strong>을 확인합니다.</p>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1rem;">
+            <div class="col-lg-8">
+                <h5><b>출근 완료</b></h5>
+                <table class="table" style="text-align: center;">
+                    <thead>
+                    <tr class="table-dark">
+                        <td>번호</td>
+                        <td>이름</td>
+                        <td>휴일 여부</td>
+                        <td>예정 시업</td>
+                        <td>예정 종업</td>
+                        <td>출근 시간</td>
+                        <td>퇴근 시간</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if commuters %}
+                    {% for commuter in commuters %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ commuter.employee.realname }}</td>
+                        <td>{{ commuter.get_todaycat_display }}</td>
+                        <td>{{ commuter.openingtime|default_if_none:'-' }}</td>
+                        <td>{{ commuter.closingtime|default_if_none:'-' }}</td>
+                        <td>{{ commuter.startdatetime }}</td>
+                        <td>{{ commuter.enddatetime|default_if_none:'-' }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8">내용이 없습니다.</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-lg-4">
+                <h5><strong style="color: blue;">미출근</strong></h5>
+                <table class="table" style="text-align: center;">
+                    <thead>
+                    <tr class="table-dark">
+                        <td>번호</td>
+                        <td>이름</td>
+                        <td>휴일 여부</td>
+                        <td>예정 시업</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if noncommuters %}
+                    {% for noncommuter in noncommuters %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ noncommuter.realname }}</td>
+                        <td>{{ noncommuter.todaycat }}</td>
+                        <td>{{ noncommuter.openingtime }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8">내용이 없습니다.</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</section><!-- End About Us Section -->
+
+{% endblock %}

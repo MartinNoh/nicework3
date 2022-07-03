@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load commute_filter %}
+{% load static %}
+
+{% block content %}
+<!-- ======= About Us Section ======= -->
+<section>
+    <div class="container">
+
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>출퇴근 내역 확인</h2>
+            <p>이번 주, 총 출근시간은 <strong style="color: blue;">{{ sum_workinghours }}시간</strong>, 총 연장근로시간은 <strong style="color: blue;">{{ sum_overtime }}시간</strong>입니다.</p>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1rem;">
+            <div class="col-lg-4">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="downloadexcel" style="height: 100%; margin: 6px 0 0 0;">엑셀 다운로드</button>
+                </div>
+            </div>
+
+            <div class="col-lg-8 d-flex justify-content-end">
+                <p style="padding-top: 0.8rem;"><b>출근 일자</b></p>
+                &nbsp;&nbsp;
+
+                <input type="date" id="search_dt" value="{{ dt|default_if_none:'' }}" style="width: 15%; height: 100%;">
+                <p style="padding-top: 0.8rem;">&nbsp;<b>부터, </b></p>
+                &nbsp;&nbsp;
+
+                <p style="padding-top: 0.8rem;"><b>오버타임</b>&nbsp;&nbsp;</p>
+                <input type="text" id="search_kw" class="form-control" value="{{ kw|default_if_none:'' }}" onkeyup="enterkey();" style="width: 10%; height: 100%;" placeholder="0" autofocus>
+                <p style="padding-top: 0.8rem;">&nbsp;<b>시간 이상의</b>&nbsp;&nbsp;</p>
+                &nbsp;&nbsp;
+
+                <select style="width:15%; height:100%;" id="search_ct">
+                    <option value="">--출근구분--</option>
+                    <option value="AL">연차</option>
+                    <option value="MO">오전 반차</option>
+                    <option value="AO">오후 반차</option>
+                    <option value="CV">경조 휴가</option>
+                    <option value="OL">공가</option>
+                    <option value="EL">조퇴</option>
+                    <option value="AB">결근</option>
+                    <option value="SL">병가</option>
+                    <option value="HD">공휴일</option>
+                    <option value="WE">주말</option>
+                    <option value="WD">평일</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="btn_search" style="height: 100%;">검색</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1.5rem;">
+            <div class="col-lg-12" style="text-align: center;">
+
+                <table class="table" style="text-align: center;" id="exceltable">
+                    <thead>
+                    <tr class="table-dark">
+                        <td>번호</td>
+                        <td>근무 구분</td>
+                        <td>예정 시업</td>
+                        <td>예정 종업</td>
+                        <td>출근 시간</td>
+                        <td>퇴근 시간</td>
+                        <td>근로 시간</td>
+                        <td>오버 타임</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if mylist %}
+                    {% for myreg in mylist %}
+                    <tr>
+                        <td>
+                            <!-- 1부터 시작하는 방법 : {{ forloop.counter }} -->
+                            <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
+                            {{ mylist.paginator.count|sub:mylist.start_index|sub:forloop.counter0|add:1 }}
+                        </td>
+                        <td>{{ myreg.get_todaycat_display }}</td>
+                        <td>{{ myreg.openingtime|default_if_none:'-' }}</td>
+                        <td>{{ myreg.closingtime|default_if_none:'-' }}</td>
+                        <td>{{ myreg.startdatetime }}</td>
+                        <td>{{ myreg.enddatetime|default_if_none:'-' }}</td>
+                        <td>{{ myreg.workinghours }}</td>
+                        <td>{{ myreg.overtime }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8">내용이 없습니다.</td>
+                    </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+                
+                <!-- 페이징처리 시작 -->
+                <ul class="pagination justify-content-center">
+                    <!-- 이전페이지 -->
+                    {% if mylist.has_previous %}
+                    <li class="page-item">
+                        <!-- Search Form을 사용하지 않을 경우 Pagination : <a class="page-link" href="?page={{ mylist.previous_page_number }}">이전</a> -->
+                        <a class="page-link" data-page="{{ mylist.previous_page_number }}" href="javascript:void(0)">이전</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+                    </li>
+                    {% endif %}
+                    <!-- 페이지리스트 -->
+                    {% for page_number in mylist.paginator.page_range %}
+                    {% if page_number >= mylist.number|add:-5 and page_number <= mylist.number|add:5 %}
+                    {% if page_number == mylist.number %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" data-page="{{ page_number }}" href="javascript:void(0)">{{ page_number }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" data-page="{{ page_number }}" href="javascript:void(0)">{{ page_number }}</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    <!-- 다음페이지 -->
+                    {% if mylist.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" data-page="{{ mylist.next_page_number }}" href="javascript:void(0)">다음</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <!-- 페이징처리 끝 -->
+                
+                <!-- 검색 Hidden Form 시작 -->
+                <form id="searchForm" method="get" action="{% url 'commute:hist' %}">
+                    <input type="hidden" id="dt" name="dt" value="{{ dt|default_if_none:'' }}">
+                    <input type="hidden" id="ct" name="ct" value="{{ ct|default_if_none:'' }}">
+                    <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+                    <input type="hidden" id="page" name="page" value="{{ page }}">
+                </form>
+                <!-- 검색 Hidden Form 끝-->
+
+            </div>
+        </div>
+    </div>
+</section><!-- End About Us Section -->
+
+{% endblock %}
+
+
+{% block script %}
+<script type='text/javascript'>
+window.onload = function() {
+    if(document.getElementById("ct").value){
+        const ct = document.getElementById('ct').value
+        document.querySelectorAll("#search_ct option").forEach(opt => {
+            if (opt.value == ct) {
+                opt.selected = true;
+            }
+        });
+    }
+};
+
+const page_elements = document.getElementsByClassName("page-link");
+Array.from(page_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        document.getElementById('page').value = this.dataset.page;
+        document.getElementById('searchForm').submit();
+    });
+});
+const btn_search = document.getElementById("btn_search");
+btn_search.addEventListener('click', function() {
+    document.getElementById('dt').value = document.getElementById('search_dt').value;
+    document.getElementById('ct').value = document.getElementById('search_ct').value;
+    document.getElementById('kw').value = document.getElementById('search_kw').value;
+    document.getElementById('page').value = 1;  // 검색버튼을 클릭할 경우 1페이지부터 조회한다.
+    document.getElementById('searchForm').submit();
+});
+</script>
+
+<script type='text/javascript'>
+    function enterkey() {
+        if (window.event.keyCode == 13) {
+            document.getElementById('btn_search').click()
+        }
+    }
+    </script>
+{% endblock %}

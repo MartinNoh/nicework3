@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load leave_filter %}
+{% load static %}
+
+{% block content %}
+
+<section>
+    <div class="container">
+
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>휴가 캘린더 확인</h2>
+            <p><strong style="color: blue;">승인</strong>된 <strong style="color: blue;">휴가</strong>들을 <strong style="color: blue;">캘린더</strong>로 확인합니다.</p>
+        </div>
+
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1rem;">
+            <div class="col-lg-12" style="text-align: center;">
+
+                <div id='calendar'></div>
+                <input type="hidden" id="totallist" value="{{ totallist }}"/>
+            </div>
+        </div>
+    </div>
+</section><!-- End About Us Section -->
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const totallist = JSON.parse(document.getElementById('totallist').value);
+        
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: totallist
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section id="commute">
+  <div class="container">
+
+    <div class="section-title" data-aos="fade-up" style="margin-top: 5%;">
+        <h2>출퇴근 시간 등록</h2>
+        {% if is_getoff %}
+        <p>"표시되는 <strong style="color: #d9534f">현재 시간</strong>으로 퇴근을 등록해주세요.</p>
+        <p>여러 번 퇴근을 등록하면, 퇴근 시간은 최종 등록된 시간으로 저장됩니다."</p>
+        {% else %}
+        <p>"표시되는 <strong style="color: #5cb85c">현재 시간</strong>으로 출근을 등록해주세요."</p>
+        {% endif %} 
+    </div>
+
+
+    <div class="row" data-aos="fade-up" data-aos-delay="150">
+
+      <div class="col-lg-3"></div>
+
+      <div class="col-lg-6">
+
+        {% if is_getoff %}
+        <table style="width: 100%;">
+          <tr style="vertical-align: middle;">
+            <td style="width: 40%; text-align: right;"><h1 class="nowText">현재 시간&nbsp;&nbsp;</h1></td>
+            <td style="width: 30%; text-align: center;"><h1 class="h1-clock nowTime">00:00:00</h1></td>
+            <td style="width: 3%;"></td>
+            <td style="width: 27%; text-align: left;">
+              <form method="GET" action="{% url 'commute:regt' 'end' %}" onsubmit="return confirm('퇴근 등록할까요?');">
+                <button type="submit" class="btn btn-danger btn-lg" style="width: 11rem;">퇴근 등록</button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>{% include "form_errors.html" %}</td>
+          </tr>
+        </table>
+
+
+        {% else %}
+
+        <table style="width: 100%;">
+          <tr style="vertical-align: middle;">
+            <td style="width: 40%; text-align: right;"><h1 class="nowText">현재 시간&nbsp;&nbsp;</h1></td>
+            <td style="width: 30%; text-align: center;"><h1 class="h1-clock nowTime">00:00:00</h1></td>
+            <td style="width: 3%;"></td>
+            <td style="width: 27%; text-align: left;">
+              <form method="GET" action="{% url 'commute:regt' 'start' %}" onsubmit="return confirm('출근 등록할까요?');">
+                <button type="submit" class="btn btn-success btn-lg" style="width: 11rem;">출근 등록</button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>{% include "form_errors.html" %}</td>
+          </tr>
+        </table>
+
+        <table style="width: 100%; margin-top: 2rem;">
+          <tr>
+            <td style="width: 12%;"></td>
+            <td style="width: 88%;">
+              <ul>
+                <li><i class="ri-check-double-line"></i>오늘은 {{ today }} ({{ today_week }}주차) {{ today_weekday }}입니다.</li>
+                <li><i class="ri-check-double-line"></i>이번 주 잔여 근무시간은 {{ remain_worktime }}시간, 잔여 연장근로시간은 {{ remain_overtime }}시간입니다.</li>
+                <li><i class="ri-check-double-line"></i><strong style="color: blue">{{ todaycat }}</strong> 계산식이 적용된 오늘 근무시간은 <strong style="color: blue">{{ modified_openingtime|default_if_none:'없음' }} ~ {{ modified_closingtime|default_if_none:'없음' }}</strong>입니다.</li>
+                <li><i class="ri-check-double-line"></i>(<u><a href="{% url 'common:mypage' %}">마이페이지</a></u>에 설정된 평소 근무시간은 {{ openingtime }} ~ {{ closingtime }}입니다.)</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        {% endif %}        
+      </div>
+
+      <div class="col-lg-3"></div>
+
+    </div>
+          
+    
+    <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 3rem;">
+      <div class="col-lg-12">
+        <img src="{% static 'assets/img/commute-img.png' %}" style="width: 100%;"></img>
+      </div>
+    </div>
+         
+
+  </div>
+</section><!-- End About Us Section -->
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+  const clock = document.querySelector('.h1-clock');
+
+  function getTime(){
+      const time = new Date();
+      const hour = time.getHours();
+      const minutes = time.getMinutes();
+      const seconds = time.getSeconds();
+      //clock.innerHTML = hour +":" + minutes + ":"+seconds;
+      clock.innerHTML = `${hour<10 ? `0${hour}`:hour}:${minutes<10 ? `0${minutes}`:minutes}:${seconds<10 ? `0${seconds}`:seconds}`
+  }
+
+  function init(){
+      setInterval(getTime, 1000);
+  }
+
+  init();
+</script>
+{% endblock %}

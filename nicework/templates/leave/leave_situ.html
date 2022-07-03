@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load commute_filter %}
+{% load static %}
+
+{% block content %}
+<!-- ======= About Us Section ======= -->
+<section>
+    <div class="container">
+
+        <div class="section-title" data-aos="fade-up" style="margin-top: 6%;">
+            <h2>잔여 휴가현황 확인</h2>
+            <p><strong style="color: blue;">남은 휴가, 연장근로시간</strong>을 확인합니다.</p>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1rem;">
+            <div class="col-lg-4">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="downloadexcel" style="height: 100%;">엑셀 다운로드</button>
+                </div>
+            </div>
+            <div class="col-lg-8" style="text-align: right;">
+                <h4><b><strong style="color: blue;">{{ nowdate }}</strong></b> 기준</h4>
+            </div>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="150" style="margin-top: 1rem;">
+            <table class="table" style="text-align: center;" id="exceltable">
+                <thead>
+                <tr class="table-dark">
+                    <td>번호</td>
+                    <td>계정</td>
+                    <td>이름</td>
+                    <td>누적 오버타임</td>
+                    <td colspan="2">1일 근로시간</td>
+                    <td colspan="2">누적 연차</td>
+                    <td colspan="2">누적 포상</td>
+                    <td colspan="2">누적 사용휴가</td>
+                    <td colspan="2">잔여 휴가</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% if result_list %}
+                {% for result in result_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ result.email|default_if_none:'-' }}</td>
+                    <td>{{ result.realname|default_if_none:'-' }}</td>
+                    <td>{{ result.sum_overtime|floatformat:1|default_if_none:'-' }}H</td>
+                    <td>/</td>
+                    <td>{{ result.workinghours|default_if_none:'-' }}H</td>
+                    <td>+</td>
+                    <td>{{ result.sum_annual|floatformat:1|default_if_none:'-' }}일</td>
+                    <td>+</td>
+                    <td>{{ result.sum_reward|floatformat:1|default_if_none:'-' }}일</td>
+                    <td>-</td>
+                    <td><b>{{ result.sum_used_leave|floatformat:1|default_if_none:'-' }}일</b></td>
+                    <td>=</td>
+                    {% if result.remained >= 0 %}
+                    <td style="color: green;"><b>{{ result.remained|floatformat:1|default_if_none:'-' }}일</b></td>
+                    {% else %}
+                    <td style="color: red;"><b>{{ result.remained|floatformat:1|default_if_none:'-' }}일</b></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="14">내용이 없습니다.</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section><!-- End About Us Section -->
+
+{% endblock %}
